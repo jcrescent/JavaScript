@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+    <link rel='stylesheet' href="/stylesheets/style.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type ="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type ="text/javascript">
+        $(document).ready(function(){
+            var socket = io.connect();
+
+            $('form').submit(function (){
+                socket.emit("form_submitted", {name: $('#name').val(), Favorite_language: $('#language').val(), location: $('#location').val(), comment : $('#comment').val()
+                });
+                return false;
+            });
+            socket.on('updated_message', function (data){
+                $('#result').append('You have sent the following information to your server: ' + data.response);
+                $('#result').append('<h4>Your lucky number is '+ data.number) 
+            });
+        })
+    </script>
+</head>
+<body>
+<div id="result"></div>
+    <form action="#">
+    Your Name:
+        <input type="input" name="name" id="name">
+        Location:
+        <select name='location' id="location">
+            <option value="Mountain View">Mountain View</option>
+            <option value="Seattle">Seattle</option>
+            <option value="Washington, D.C.">Washington, D.C.</option>
+            <option value="Chicago">Chicago</option>
+            <option value="Los Angeles">Los Angeles</option>
+            <option value="Dallas">Dallas</option>
+        </select>
+        Favorite Language 
+        <select name="language" id="language">
+            <option value="Python">Python</option>
+            <option value="Javascript">Javascript</option>
+            <option value="Ruby">Ruby</option>
+            <option value="PHP">PHP</option>
+            <option value="Swift">Swift</option>
+            <option value="Love">Love</option>
+        </select>
+        <label>Comment:</label>
+        <textarea name='comment' id="comment"></textarea>
+        <input type="submit" name="Submit">
+    </form>
+</body>
+</html>
+ 
