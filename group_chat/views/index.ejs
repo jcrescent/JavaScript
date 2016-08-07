@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Group Chat</title>
+<link rel="stylesheet" href="/stylesheets/style.css">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script type ="text/javascript" src="/socket.io/socket.io.js"></script>
+<script type ="text/javascript">
+	$(document).ready(function(){
+		var socket = io.connect();
+		var name;
+		function begin(){
+			name = prompt('Enter your username')
+			if (name != null){
+				socket.emit('got_new_user', {name:name});
+			}else{
+				begin();
+			}
+		}
+		begin();
+		socket.on('new_user', function(data){
+			$('#conversation').append('<p>'+data.name+' has joined the conversation</p>')
+		});
+		$('#message').submit(function(){
+			socket.emit('sending_chat', {name: name, chat: $('#chat').val()})
+			return false
+		});
+		socket.on('update_convo', function(data){
+			$('#conversation').append('<p>'+data.response+'</p>')
+		});
+		$('#leave').click(function(){
+			socket.emit('leave_convo', {name: name});
+			$('#conversation').html('');
+			begin();
+		});
+		socket.on('user_leave', function(data){
+			$('#conversation').append('<p>'+data.response+' has left the conversation</p>')
+		});
+	});
+</script>
+</head>
+<body>
+	<h3>Conversation</h3>
+	<div id="conversation"></div>
+	<form id="message">
+		<textarea id="chat"></textarea>
+		<input type="submit" name="Submit" value="Send">
+	</form>
+	<button id="leave">Leave Conversation</button>
+</body>
+</html>
